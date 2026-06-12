@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # 1. Database Service (PostgreSQL 15)
+  db:
+    image: postgres:15
+    container_name: devops_postgres_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: student_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d student_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Web Application Service (FastAPI)
+  web:
+    build: .
+    container_name: devops_fastapi_app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/student_db
+    depends_on:
+      db:
+        condition: service_healthy
+
+# Named volume data ko hamesha safe rakhnay ke liye (Persistence)
+volumes:
+  postgres_data:
