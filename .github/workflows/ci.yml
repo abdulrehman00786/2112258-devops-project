@@ -38,5 +38,7 @@ jobs:
 
     # 5. Automated Tests run karna (Jo tests hum ne tests/ folder mein likhay hain)
     - name: Run tests with pytest
-      run: |
-        pytest
+      - name: Run tests with pytest
+     env:
+       PYTHONPATH: .
+     run: pytest
