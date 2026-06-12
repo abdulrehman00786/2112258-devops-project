@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
@@ -7,7 +8,11 @@ from .database import engine, Base, get_db
 from . import models
 
 # Database tables create karna
-Base.metadata.create_all(bind=engine)
+if os.getenv("TESTING") != "True":
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Database connection skipped or failed: {e}")
 
 app = FastAPI(title="DevOps Fundamentals Final Project")
 
