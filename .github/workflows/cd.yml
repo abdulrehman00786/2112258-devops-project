@@ -1,0 +1,41 @@
+name: Continuous Deployment
+
+# Deployment kab chalegi: Jab bhi CI pass ho kar main branch par code push ho
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Yeh line ensure karegi ke deploy tabhi ho jab testing (CI) green ho chuki ho
+    needs: test
+    if: always() && (needs.test.result == 'success' || needs.test.result == 'skipped')
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # GitHub Actions ko direct AWS server ke andar ghusana secrets use karte huay
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        script: |
+          # 1. Project folder banana agar pehle se na ho aur usme enter hona
+          mkdir -p ~/app && cd ~/app
+          
+          # 2. Agar pehle se git repo nahi hai to clone karna, warna pull karna
+          if [ ! -d ".git" ]; then
+            git clone https://github.com/${{ github.repository }}.git .
+          else
+            git fetch --all
+            git reset --hard origin/main
+          fi
+          
+          # 3. Purane chalte huay containers ko band karna aur naye build kar ke chala dena
+          docker compose down
+          docker compose up -d --build
