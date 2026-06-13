@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # 1. Database Service (PostgreSQL 15)
+ 
   db:
     image: postgres:15
     container_name: devops_postgres_db
@@ -19,7 +19,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # 2. Web Application Service (FastAPI)
+
   web:
     build: .
     container_name: devops_fastapi_app
@@ -31,6 +31,5 @@ services:
       db:
         condition: service_healthy
 
-# Named volume data ko hamesha safe rakhnay ke liye (Persistence)
 volumes:
   postgres_data:

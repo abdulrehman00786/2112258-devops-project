@@ -37,7 +37,7 @@ jobs:
   # ------ JOB 2: CONTINUOUS DEPLOYMENT (CD) ------
   deploy:
     runs-on: ubuntu-latest
-    needs: test # Yeh ensure karega ke pehle tests pass hon, phir deploy ho
+    needs: test 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4

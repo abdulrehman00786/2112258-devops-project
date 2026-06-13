@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Environment variables se DB URL uthayega, nahi to fallback local URL use karega
+
 DATABASE_URL = os.getenv(
     "DATABASE_URL", 
     "postgresql://user:password@localhost:5432/student_db"
@@ -14,7 +14,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 
-# Database session dependency
 def get_db():
     db = SessionLocal()
     try:
